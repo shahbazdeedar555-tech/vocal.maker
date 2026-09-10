@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sindhi Urdu Vocal Maker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f5;
+            color: #222;
+        }
+
+        header {
+            background: #0b5d3b;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #0b5d3b;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #08472d;
+        }
+
+        #countIn {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0b5d3b;
+            margin: 20px 0 10px;
+            min-height: 35px;
+        }
+
+        #status {
+            text-align: center;
+            padding: 12px;
+            background: #eef7f1;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 10px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎤 Sindhi Urdu Vocal Maker</h1>
+    <p>Create your vocal track</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <label for="title">Song / Poem Title</label>
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Enter title"
+        >
+
+        <label for="lyrics">Sindhi / Urdu Lyrics</label>
+
+        <textarea
+            id="lyrics"
+            placeholder="Write or paste your lyrics here..."
+        ></textarea>
+
+        <label for="bpm">BPM</label>
+
+        <input
+            type="number"
+            id="bpm"
+            value="120"
+            min="40"
+            max="240"
+        >
+
+        <button onclick="startVocal()">
+            🎤 Start Vocal
+        </button>
+
+        <div id="countIn"></div>
+
+        <div id="status">
+            Ready
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    Sindhi Urdu Vocal Maker © 2026
+</footer>
+
+<script>
+
+function startVocal() {
+
+    const title = document.getElementById("title").value.trim();
+    const lyrics = document.getElementById("lyrics").value.trim();
+
+    if (title === "") {
+        alert("Please enter the song or poem title.");
+        return;
+    }
+
+    if (lyrics === "") {
+        alert("Please enter Sindhi or Urdu lyrics.");
+        return;
+    }
+
+    const countIn = document.getElementById("countIn");
+    const status = document.getElementById("status");
+
+    const numbers = ["1", "2", "3", "4"];
+    let i = 0;
+
+    status.textContent = "Preparing vocal...";
+
+    const timer = setInterval(function () {
+
+        countIn.textContent = numbers[i];
+
+        i++;
+
+        if (i === numbers.length) {
+
+            clearInterval(timer);
+
+            setTimeout(function () {
+
+                countIn.textContent = "🎤 VOCAL START";
+
+                status.textContent =
+                    "Vocal session started: " + title;
+
+            }, 500);
+        }
+
+    }, 700);
+}
+
+</script>
+
+</body>
+</html>
