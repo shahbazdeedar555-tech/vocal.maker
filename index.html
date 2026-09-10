@@ -10,102 +10,109 @@
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7f5;
+            background: #f2f7f4;
             color: #222;
-        }
-
-        header {
-            background: #0b5d3b;
-            color: white;
-            text-align: center;
-            padding: 25px 15px;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        header p {
-            margin: 8px 0 0;
-            font-size: 15px;
+            padding: 20px;
         }
 
         .container {
-            max-width: 650px;
-            margin: 25px auto;
-            padding: 0 15px;
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
         }
 
-        .card {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        h1 {
+            text-align: center;
+            color: #0b5d3b;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin: 15px 0 8px;
         }
 
         input,
         textarea {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 18px;
-            border: 1px solid #ccc;
+            padding: 13px;
+            border: 1px solid #bbb;
             border-radius: 8px;
             font-size: 16px;
         }
 
         textarea {
-            min-height: 150px;
+            min-height: 180px;
             resize: vertical;
+            direction: rtl;
+            text-align: right;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0b5d3b;
+        }
+
+        .bpm-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #bpm {
+            width: 100%;
+        }
+
+        #bpmValue {
+            min-width: 45px;
+            font-weight: bold;
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            margin-top: 22px;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 9px;
             background: #0b5d3b;
             color: white;
-            font-size: 17px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
         }
 
         button:hover {
-            background: #08472d;
+            background: #08482f;
         }
 
-        #countIn {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #0b5d3b;
-            margin: 20px 0 10px;
-            min-height: 35px;
+        button.stop {
+            background: #a32626;
         }
 
-        #status {
-            text-align: center;
+        .status {
+            margin-top: 18px;
             padding: 12px;
-            background: #eef7f1;
             border-radius: 8px;
-            margin-top: 12px;
+            text-align: center;
+            background: #e8f5ec;
+            color: #0b5d3b;
             font-weight: bold;
         }
 
         footer {
             text-align: center;
-            padding: 25px 10px;
+            margin-top: 25px;
             color: #666;
             font-size: 14px;
         }
@@ -114,105 +121,172 @@
 
 <body>
 
-<header>
-    <h1>🎤 Sindhi Urdu Vocal Maker</h1>
-    <p>Create your vocal track</p>
-</header>
-
 <div class="container">
 
-    <div class="card">
+    <h1>🎤 Sindhi Urdu Vocal Maker</h1>
 
-        <label for="title">Song / Poem Title</label>
+    <label for="title">Song / Poem Title</label>
+    <input
+        type="text"
+        id="title"
+        placeholder="Enter title"
+    >
 
+    <label for="lyrics">Sindhi / Urdu Lyrics</label>
+    <textarea
+        id="lyrics"
+        placeholder="Write or paste your lyrics here..."
+    ></textarea>
+
+    <label for="bpm">BPM</label>
+
+    <div class="bpm-box">
         <input
-            type="text"
-            id="title"
-            placeholder="Enter title"
-        >
-
-        <label for="lyrics">Sindhi / Urdu Lyrics</label>
-
-        <textarea
-            id="lyrics"
-            placeholder="Write or paste your lyrics here..."
-        ></textarea>
-
-        <label for="bpm">BPM</label>
-
-        <input
-            type="number"
+            type="range"
             id="bpm"
+            min="60"
+            max="180"
             value="120"
-            min="40"
-            max="240"
         >
 
-        <button onclick="startVocal()">
-            🎤 Start Vocal
-        </button>
-
-        <div id="countIn"></div>
-
-        <div id="status">
-            Ready
-        </div>
-
+        <span id="bpmValue">120</span>
     </div>
+
+    <button id="vocalButton">
+        🎤 Start Vocal
+    </button>
+
+    <div class="status" id="status">
+        Ready
+    </div>
+
+    <footer>
+        Sindhi Urdu Vocal Maker © 2026
+    </footer>
 
 </div>
 
-<footer>
-    Sindhi Urdu Vocal Maker © 2026
-</footer>
-
 <script>
 
-function startVocal() {
-
-    const title = document.getElementById("title").value.trim();
-    const lyrics = document.getElementById("lyrics").value.trim();
-
-    if (title === "") {
-        alert("Please enter the song or poem title.");
-        return;
-    }
-
-    if (lyrics === "") {
-        alert("Please enter Sindhi or Urdu lyrics.");
-        return;
-    }
-
-    const countIn = document.getElementById("countIn");
+    const bpmSlider = document.getElementById("bpm");
+    const bpmValue = document.getElementById("bpmValue");
+    const vocalButton = document.getElementById("vocalButton");
     const status = document.getElementById("status");
 
-    const numbers = ["1", "2", "3", "4"];
-    let i = 0;
+    let isSpeaking = false;
 
-    status.textContent = "Preparing vocal...";
+    // BPM display
+    bpmSlider.addEventListener("input", function () {
+        bpmValue.textContent = this.value;
+    });
 
-    const timer = setInterval(function () {
+    // Start / Stop Vocal
+    vocalButton.addEventListener("click", function () {
 
-        countIn.textContent = numbers[i];
+        // If already speaking, stop it
+        if (isSpeaking) {
 
-        i++;
+            speechSynthesis.cancel();
 
-        if (i === numbers.length) {
+            isSpeaking = false;
 
-            clearInterval(timer);
+            vocalButton.textContent = "🎤 Start Vocal";
+            vocalButton.classList.remove("stop");
 
-            setTimeout(function () {
+            status.textContent = "Stopped";
 
-                countIn.textContent = "🎤 VOCAL START";
-
-                status.textContent =
-                    "Vocal session started: " + title;
-
-            }, 500);
+            return;
         }
 
-    }, 700);
-}
+        const title = document.getElementById("title").value.trim();
+        const lyrics = document.getElementById("lyrics").value.trim();
+
+        if (!lyrics) {
+            status.textContent = "Please enter Sindhi / Urdu lyrics first.";
+            return;
+        }
+
+        // Stop any previous speech
+        speechSynthesis.cancel();
+
+        let text = lyrics;
+
+        if (title) {
+            text = title + ". " + lyrics;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // Speaking speed based on BPM
+        const bpm = Number(bpmSlider.value);
+
+        let rate = bpm / 120;
+
+        if (rate < 0.5) rate = 0.5;
+        if (rate > 1.5) rate = 1.5;
+
+        utterance.rate = rate;
+
+        // Natural pitch
+        utterance.pitch = 1;
+
+        // Comfortable volume
+        utterance.volume = 1;
+
+        // Try to select Urdu voice when available
+        const voices = speechSynthesis.getVoices();
+
+        const urduVoice = voices.find(function (voice) {
+            return voice.lang.toLowerCase().startsWith("ur");
+        });
+
+        const sindhiVoice = voices.find(function (voice) {
+            return voice.lang.toLowerCase().startsWith("sd");
+        });
+
+        if (urduVoice) {
+            utterance.voice = urduVoice;
+        } else if (sindhiVoice) {
+            utterance.voice = sindhiVoice;
+        }
+
+        utterance.onstart = function () {
+
+            isSpeaking = true;
+
+            vocalButton.textContent = "⏹ Stop Vocal";
+            vocalButton.classList.add("stop");
+
+            status.textContent = "🎤 Vocal is playing...";
+        };
+
+        utterance.onend = function () {
+
+            isSpeaking = false;
+
+            vocalButton.textContent = "🎤 Start Vocal";
+            vocalButton.classList.remove("stop");
+
+            status.textContent = "✅ Vocal finished";
+        };
+
+        utterance.onerror = function () {
+
+            isSpeaking = false;
+
+            vocalButton.textContent = "🎤 Start Vocal";
+            vocalButton.classList.remove("stop");
+
+            status.textContent = "⚠️ Unable to play vocal on this device.";
+        };
+
+        speechSynthesis.speak(utterance);
+    });
+
+    // Load voices
+    speechSynthesis.onvoiceschanged = function () {
+        speechSynthesis.getVoices();
+    };
 
 </script>
 
