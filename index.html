@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sindhi Urdu Vocal Maker</title>
+<title>Background Music Maker</title>
 
 <style>
 * {
@@ -45,39 +45,15 @@ h1 {
 label {
     display: block;
     font-weight: bold;
-    margin: 15px 0 8px;
-}
-
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-textarea {
-    min-height: 180px;
-    resize: vertical;
-    direction: rtl;
-    text-align: right;
-    line-height: 1.7;
-}
-
-input:focus,
-textarea:focus {
-    outline: none;
-    border-color: #0b5d3b;
+    margin: 18px 0 8px;
 }
 
 .upload-box {
     background: #f5f9f6;
     border: 2px dashed #0b5d3b;
     border-radius: 10px;
-    padding: 18px;
+    padding: 20px;
     text-align: center;
-    margin-top: 10px;
 }
 
 .upload-box input[type="file"] {
@@ -86,13 +62,13 @@ textarea:focus {
 }
 
 .upload-help {
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 13px;
     color: #666;
 }
 
 .file-name {
-    margin-top: 10px;
+    margin-top: 12px;
     font-weight: bold;
     color: #0b5d3b;
     word-break: break-word;
@@ -101,21 +77,6 @@ textarea:focus {
 audio {
     width: 100%;
     margin-top: 12px;
-}
-
-.bpm-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-#bpm {
-    width: 100%;
-}
-
-#bpmValue {
-    min-width: 45px;
-    font-weight: bold;
 }
 
 button {
@@ -135,11 +96,12 @@ button:hover {
     background: #08482f;
 }
 
-button.stop {
-    background: #a32626;
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
 }
 
-button.secondary {
+.secondary {
     background: #555;
 }
 
@@ -151,6 +113,31 @@ button.secondary {
     background: #e8f5ec;
     color: #0b5d3b;
     font-weight: bold;
+    line-height: 1.5;
+}
+
+.result-box {
+    margin-top: 25px;
+    padding: 18px;
+    border-radius: 10px;
+    background: #f5f9f6;
+    border: 1px solid #cbded3;
+    display: none;
+}
+
+.result-title {
+    color: #0b5d3b;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.download-button {
+    background: #1769aa;
+}
+
+.download-button:hover {
+    background: #0d4f80;
 }
 
 footer {
@@ -166,139 +153,102 @@ footer {
 
 <div class="container">
 
-<h1>🎤 Sindhi Urdu Vocal Maker</h1>
+    <h1>🎼 Background Music Maker</h1>
 
-<div class="subtitle">
-Create your vocal track
-</div>
-
-<!-- SONG TITLE -->
-<label for="title">
-Song / Poem Title
-</label>
-
-<input
-    type="text"
-    id="title"
-    placeholder="Enter title"
->
+    <div class="subtitle">
+        Remove vocals and create instrumental music
+    </div>
 
 
-<!-- SONG UPLOAD -->
-<label>
-🎵 Upload Song / Music
-</label>
+    <!-- SONG UPLOAD -->
 
-<div class="upload-box">
+    <label for="songFile">
+        🎵 Upload Song / Music
+    </label>
 
-<input
-    type="file"
-    id="songFile"
-    accept="audio/*"
->
+    <div class="upload-box">
 
-<div class="upload-help">
-Select an MP3, WAV, M4A or other audio file.
-</div>
+        <input
+            type="file"
+            id="songFile"
+            accept="audio/*"
+        >
 
-<div class="file-name" id="songName">
-No song selected
-</div>
+        <div class="upload-help">
+            Select an MP3, WAV, M4A or other audio file.
+        </div>
 
-<audio
-    id="audioPlayer"
-    controls
-    style="display:none;">
-</audio>
+        <div class="file-name" id="songName">
+            No song selected
+        </div>
 
-</div>
+        <audio
+            id="originalPlayer"
+            controls
+            style="display:none;">
+        </audio>
 
-
-<!-- LYRICS FILE -->
-<label>
-📁 Upload Lyrics File
-</label>
-
-<div class="upload-box">
-
-<input
-    type="file"
-    id="lyricsFile"
-    accept=".txt,text/plain"
->
-
-<div class="upload-help">
-Select a TXT file containing your Sindhi or Urdu lyrics.
-</div>
-
-</div>
+    </div>
 
 
-<!-- LYRICS -->
-<label for="lyrics">
-Sindhi / Urdu Lyrics
-</label>
+    <!-- SEPARATE BUTTON -->
 
-<textarea
-    id="lyrics"
-    placeholder="Write or paste your lyrics here..."
-></textarea>
+    <button id="separateButton" disabled>
+        🎼 Separate Background Music
+    </button>
 
 
-<!-- BPM -->
-<label for="bpm">
-BPM
-</label>
+    <!-- STOP -->
 
-<div class="bpm-box">
-
-<input
-    type="range"
-    id="bpm"
-    min="60"
-    max="180"
-    value="120"
->
-
-<span id="bpmValue">
-120
-</span>
-
-</div>
+    <button
+        id="stopButton"
+        class="secondary"
+        style="display:none;">
+        ⏹ Stop
+    </button>
 
 
-<!-- VOCAL BUTTON -->
-<button id="vocalButton">
-🎤 Start Vocal
-</button>
+    <!-- STATUS -->
+
+    <div class="status" id="status">
+        Please upload a song first.
+    </div>
 
 
-<!-- STOP SONG -->
-<button
-    id="stopSongButton"
-    class="secondary"
-    style="display:none;">
-⏹ Stop Song
-</button>
+    <!-- RESULT -->
+
+    <div class="result-box" id="resultBox">
+
+        <div class="result-title">
+            🎼 Background Music / Instrumental
+        </div>
+
+        <audio
+            id="instrumentalPlayer"
+            controls>
+        </audio>
+
+        <button
+            id="downloadButton"
+            class="download-button">
+            ⬇️ Download Background Music
+        </button>
+
+    </div>
 
 
-<div class="status" id="status">
-Ready
-</div>
-
-
-<footer>
-Sindhi Urdu Vocal Maker © 2026
-</footer>
+    <footer>
+        Sindhi Urdu Vocal Maker © 2026
+    </footer>
 
 </div>
 
 
 <script>
 
-/* =========================
+/* =====================================
    ELEMENTS
-========================= */
+===================================== */
 
 const songFile =
     document.getElementById("songFile");
@@ -306,52 +256,35 @@ const songFile =
 const songName =
     document.getElementById("songName");
 
-const audioPlayer =
-    document.getElementById("audioPlayer");
+const originalPlayer =
+    document.getElementById("originalPlayer");
 
-const stopSongButton =
-    document.getElementById("stopSongButton");
+const separateButton =
+    document.getElementById("separateButton");
 
-const lyricsFile =
-    document.getElementById("lyricsFile");
-
-const lyricsBox =
-    document.getElementById("lyrics");
-
-const titleBox =
-    document.getElementById("title");
-
-const bpmSlider =
-    document.getElementById("bpm");
-
-const bpmValue =
-    document.getElementById("bpmValue");
-
-const vocalButton =
-    document.getElementById("vocalButton");
+const stopButton =
+    document.getElementById("stopButton");
 
 const status =
     document.getElementById("status");
 
+const resultBox =
+    document.getElementById("resultBox");
+
+const instrumentalPlayer =
+    document.getElementById("instrumentalPlayer");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
 
 let songURL = null;
-let isSpeaking = false;
+let instrumentalURL = null;
 
 
-/* =========================
-   BPM DISPLAY
-========================= */
-
-bpmSlider.addEventListener("input", function () {
-
-    bpmValue.textContent = this.value;
-
-});
-
-
-/* =========================
+/* =====================================
    SONG UPLOAD
-========================= */
+===================================== */
 
 songFile.addEventListener("change", function () {
 
@@ -367,388 +300,224 @@ songFile.addEventListener("change", function () {
     if (!file.type.startsWith("audio/")) {
 
         status.textContent =
-            "⚠️ Please select an audio/song file.";
+            "⚠️ Please select an audio file.";
 
         songFile.value = "";
+
+        separateButton.disabled = true;
 
         return;
     }
 
 
-    /* Remove old URL */
+    /* Remove previous URL */
 
     if (songURL) {
         URL.revokeObjectURL(songURL);
     }
 
 
-    /* Create new local URL */
+    /* Create local audio URL */
 
     songURL =
         URL.createObjectURL(file);
 
 
-    /* Connect audio player */
-
-    audioPlayer.src =
-        songURL;
-
-
-    audioPlayer.style.display =
-        "block";
-
+    /* Show filename */
 
     songName.textContent =
         "🎵 " + file.name;
 
 
-    status.textContent =
-        "✅ Song uploaded successfully.";
+    /* Load original song */
 
-});
+    originalPlayer.src =
+        songURL;
+
+    originalPlayer.style.display =
+        "block";
 
 
-/* =========================
-   STOP SONG
-========================= */
+    /* Enable separation */
 
-stopSongButton.addEventListener("click", function () {
+    separateButton.disabled =
+        false;
 
-    audioPlayer.pause();
 
-    audioPlayer.currentTime = 0;
+    /* Hide old result */
 
-    stopSongButton.style.display =
+    resultBox.style.display =
         "none";
 
+
+    instrumentalPlayer.removeAttribute(
+        "src"
+    );
+
+
     status.textContent =
-        "Song stopped.";
+        "✅ Song uploaded. Ready to separate background music.";
 
 });
 
 
-/* =========================
-   AUDIO PLAY EVENT
-========================= */
+/* =====================================
+   ORIGINAL SONG PLAY
+===================================== */
 
-audioPlayer.addEventListener("play", function () {
+originalPlayer.addEventListener("play", function () {
 
-    stopSongButton.style.display =
+    stopButton.style.display =
         "block";
 
     status.textContent =
-        "🎵 Song is playing...";
+        "🎵 Original song is playing...";
 
 });
 
 
-/* =========================
-   AUDIO PAUSE EVENT
-========================= */
+/* =====================================
+   ORIGINAL SONG PAUSE
+===================================== */
 
-audioPlayer.addEventListener("pause", function () {
+originalPlayer.addEventListener("pause", function () {
 
-    if (!audioPlayer.ended) {
+    if (!originalPlayer.ended) {
 
         status.textContent =
-            "Song paused.";
+            "Original song paused.";
 
     }
 
 });
 
 
-/* =========================
-   AUDIO FINISHED
-========================= */
+/* =====================================
+   STOP
+===================================== */
 
-audioPlayer.addEventListener("ended", function () {
+stopButton.addEventListener("click", function () {
 
-    stopSongButton.style.display =
+    originalPlayer.pause();
+
+    instrumentalPlayer.pause();
+
+    originalPlayer.currentTime =
+        0;
+
+    instrumentalPlayer.currentTime =
+        0;
+
+    stopButton.style.display =
         "none";
 
     status.textContent =
-        "Song finished.";
+        "Playback stopped.";
 
 });
 
 
-/* =========================
-   LYRICS TXT UPLOAD
-========================= */
+/* =====================================
+   SEPARATE BACKGROUND MUSIC
+===================================== */
 
-lyricsFile.addEventListener("change", function () {
+separateButton.addEventListener("click", function () {
 
-    const file =
-        this.files[0];
-
-    if (!file) {
-        return;
-    }
-
-
-    if (!file.name.toLowerCase().endsWith(".txt")) {
+    if (!songFile.files[0]) {
 
         status.textContent =
-            "⚠️ Please select a TXT lyrics file.";
-
-        lyricsFile.value = "";
+            "⚠️ Please upload a song first.";
 
         return;
     }
 
 
-    const reader =
-        new FileReader();
+    /*
+       IMPORTANT:
+
+       Real vocal separation requires
+       an AI audio-separation engine.
+
+       This button will be connected
+       to that engine in the next step.
+    */
 
 
-    reader.onload =
-        function(event) {
+    separateButton.disabled =
+        true;
 
-            lyricsBox.value =
-                event.target.result;
-
-            status.textContent =
-                "✅ Lyrics file loaded successfully.";
-
-        };
+    separateButton.textContent =
+        "⏳ Preparing separation...";
 
 
-    reader.onerror =
-        function() {
-
-            status.textContent =
-                "⚠️ Could not read the lyrics file.";
-
-        };
+    status.textContent =
+        "🎼 Audio separation engine is not connected yet.";
 
 
-    reader.readAsText(
-        file,
-        "UTF-8"
-    );
+    setTimeout(function () {
+
+        separateButton.disabled =
+            false;
+
+        separateButton.textContent =
+            "🎼 Separate Background Music";
+
+        status.textContent =
+            "Ready for the AI background-music separation engine.";
+
+    }, 1200);
 
 });
 
 
-/* =========================
-   START / STOP VOCAL
-========================= */
+/* =====================================
+   DOWNLOAD
+===================================== */
 
-vocalButton.addEventListener("click", function () {
+downloadButton.addEventListener("click", function () {
 
-
-    /* STOP VOCAL */
-
-    if (isSpeaking) {
-
-        speechSynthesis.cancel();
-
-        isSpeaking = false;
-
-        vocalButton.textContent =
-            "🎤 Start Vocal";
-
-        vocalButton.classList.remove("stop");
+    if (!instrumentalURL) {
 
         status.textContent =
-            "Vocal stopped.";
+            "⚠️ No background music file is available yet.";
 
         return;
     }
 
 
-    const title =
-        titleBox.value.trim();
+    const link =
+        document.createElement("a");
 
-    const lyrics =
-        lyricsBox.value.trim();
+    link.href =
+        instrumentalURL;
 
+    link.download =
+        "background-music.mp3";
 
-    /* CHECK LYRICS */
+    document.body.appendChild(link);
 
-    if (!lyrics) {
+    link.click();
 
-        status.textContent =
-            "⚠️ Please write lyrics or upload a TXT file first.";
-
-        return;
-    }
-
-
-    speechSynthesis.cancel();
-
-
-    let text =
-        lyrics;
-
-
-    if (title) {
-
-        text =
-            title +
-            ". " +
-            lyrics;
-
-    }
-
-
-    const utterance =
-        new SpeechSynthesisUtterance(text);
-
-
-    /* =========================
-       BPM → SPEAKING SPEED
-    ========================= */
-
-    const bpm =
-        Number(bpmSlider.value);
-
-
-    let rate =
-        bpm / 120;
-
-
-    if (rate < 0.5) {
-        rate = 0.5;
-    }
-
-
-    if (rate > 1.5) {
-        rate = 1.5;
-    }
-
-
-    utterance.rate =
-        rate;
-
-    utterance.pitch =
-        1;
-
-    utterance.volume =
-        1;
-
-
-    /* =========================
-       FIND URDU / SINDHI VOICE
-    ========================= */
-
-    const voices =
-        speechSynthesis.getVoices();
-
-
-    const urduVoice =
-        voices.find(function(voice) {
-
-            return voice.lang
-                .toLowerCase()
-                .startsWith("ur");
-
-        });
-
-
-    const sindhiVoice =
-        voices.find(function(voice) {
-
-            return voice.lang
-                .toLowerCase()
-                .startsWith("sd");
-
-        });
-
-
-    if (urduVoice) {
-
-        utterance.voice =
-            urduVoice;
-
-    } else if (sindhiVoice) {
-
-        utterance.voice =
-            sindhiVoice;
-
-    }
-
-
-    /* =========================
-       VOCAL STARTED
-    ========================= */
-
-    utterance.onstart =
-        function() {
-
-            isSpeaking = true;
-
-            vocalButton.textContent =
-                "⏹ Stop Vocal";
-
-            vocalButton.classList.add("stop");
-
-            status.textContent =
-                "🎤 Vocal is playing...";
-
-        };
-
-
-    /* =========================
-       VOCAL FINISHED
-    ========================= */
-
-    utterance.onend =
-        function() {
-
-            isSpeaking = false;
-
-            vocalButton.textContent =
-                "🎤 Start Vocal";
-
-            vocalButton.classList.remove("stop");
-
-            status.textContent =
-                "✅ Vocal finished";
-
-        };
-
-
-    /* =========================
-       VOCAL ERROR
-    ========================= */
-
-    utterance.onerror =
-        function() {
-
-            isSpeaking = false;
-
-            vocalButton.textContent =
-                "🎤 Start Vocal";
-
-            vocalButton.classList.remove("stop");
-
-            status.textContent =
-                "⚠️ Unable to play vocal on this device.";
-
-        };
-
-
-    /* START */
-
-    speechSynthesis.speak(
-        utterance
-    );
+    document.body.removeChild(link);
 
 });
 
 
-/* =========================
-   LOAD VOICES
-========================= */
+/* =====================================
+   CLEANUP
+===================================== */
 
-speechSynthesis.onvoiceschanged =
-    function() {
+window.addEventListener("beforeunload", function () {
 
-        speechSynthesis.getVoices();
+    if (songURL) {
+        URL.revokeObjectURL(songURL);
+    }
 
-    };
+    if (instrumentalURL) {
+        URL.revokeObjectURL(instrumentalURL);
+    }
+
+});
 
 </script>
 
