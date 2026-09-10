@@ -33,6 +33,12 @@
         h1 {
             text-align: center;
             color: #0b5d3b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
             margin-bottom: 25px;
         }
 
@@ -42,7 +48,7 @@
             margin: 15px 0 8px;
         }
 
-        input,
+        input[type="text"],
         textarea {
             width: 100%;
             padding: 13px;
@@ -56,12 +62,33 @@
             resize: vertical;
             direction: rtl;
             text-align: right;
+            line-height: 1.7;
         }
 
         input:focus,
         textarea:focus {
             outline: none;
             border-color: #0b5d3b;
+        }
+
+        .upload-box {
+            background: #f5f9f6;
+            border: 2px dashed #0b5d3b;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .upload-box input[type="file"] {
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .upload-help {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
         }
 
         .bpm-box {
@@ -125,22 +152,53 @@
 
     <h1>🎤 Sindhi Urdu Vocal Maker</h1>
 
-    <label for="title">Song / Poem Title</label>
+    <div class="subtitle">
+        Create your vocal track
+    </div>
+
+    <label for="title">
+        Song / Poem Title
+    </label>
+
     <input
         type="text"
         id="title"
         placeholder="Enter title"
     >
 
-    <label for="lyrics">Sindhi / Urdu Lyrics</label>
+    <label>
+        📁 Upload Lyrics File
+    </label>
+
+    <div class="upload-box">
+
+        <input
+            type="file"
+            id="lyricsFile"
+            accept=".txt,text/plain"
+        >
+
+        <div class="upload-help">
+            Select a TXT file containing your Sindhi or Urdu lyrics.
+        </div>
+
+    </div>
+
+    <label for="lyrics">
+        Sindhi / Urdu Lyrics
+    </label>
+
     <textarea
         id="lyrics"
         placeholder="Write or paste your lyrics here..."
     ></textarea>
 
-    <label for="bpm">BPM</label>
+    <label for="bpm">
+        BPM
+    </label>
 
     <div class="bpm-box">
+
         <input
             type="range"
             id="bpm"
@@ -149,7 +207,10 @@
             value="120"
         >
 
-        <span id="bpmValue">120</span>
+        <span id="bpmValue">
+            120
+        </span>
+
     </div>
 
     <button id="vocalButton">
@@ -166,127 +227,290 @@
 
 </div>
 
+
 <script>
+
+    const fileInput = document.getElementById("lyricsFile");
+    const lyricsBox = document.getElementById("lyrics");
+    const titleBox = document.getElementById("title");
 
     const bpmSlider = document.getElementById("bpm");
     const bpmValue = document.getElementById("bpmValue");
+
     const vocalButton = document.getElementById("vocalButton");
     const status = document.getElementById("status");
 
     let isSpeaking = false;
 
-    // BPM display
+
+    // =========================
+    // BPM DISPLAY
+    // =========================
+
     bpmSlider.addEventListener("input", function () {
+
         bpmValue.textContent = this.value;
+
     });
 
-    // Start / Stop Vocal
+
+    // =========================
+    // UPLOAD TXT FILE
+    // =========================
+
+    fileInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.name.toLowerCase().endsWith(".txt")) {
+
+            status.textContent =
+                "⚠️ Please select a TXT lyrics file.";
+
+            fileInput.value = "";
+
+            return;
+        }
+
+
+        const reader = new FileReader();
+
+
+        reader.onload = function (event) {
+
+            lyricsBox.value = event.target.result;
+
+            status.textContent =
+                "✅ Lyrics file loaded successfully.";
+
+        };
+
+
+        reader.onerror = function () {
+
+            status.textContent =
+                "⚠️ Could not read the lyrics file.";
+
+        };
+
+
+        reader.readAsText(file, "UTF-8");
+
+    });
+
+
+    // =========================
+    // START / STOP VOCAL
+    // =========================
+
     vocalButton.addEventListener("click", function () {
 
-        // If already speaking, stop it
+
+        // STOP
         if (isSpeaking) {
 
             speechSynthesis.cancel();
 
             isSpeaking = false;
 
-            vocalButton.textContent = "🎤 Start Vocal";
+            vocalButton.textContent =
+                "🎤 Start Vocal";
+
             vocalButton.classList.remove("stop");
 
-            status.textContent = "Stopped";
+            status.textContent =
+                "Stopped";
 
             return;
         }
 
-        const title = document.getElementById("title").value.trim();
-        const lyrics = document.getElementById("lyrics").value.trim();
 
+        const title =
+            titleBox.value.trim();
+
+        const lyrics =
+            lyricsBox.value.trim();
+
+
+        // CHECK LYRICS
         if (!lyrics) {
-            status.textContent = "Please enter Sindhi / Urdu lyrics first.";
+
+            status.textContent =
+                "⚠️ Please write lyrics or upload a TXT file first.";
+
             return;
         }
 
-        // Stop any previous speech
+
         speechSynthesis.cancel();
+
 
         let text = lyrics;
 
+
         if (title) {
-            text = title + ". " + lyrics;
+
+            text =
+                title +
+                ". " +
+                lyrics;
+
         }
 
-        const utterance = new SpeechSynthesisUtterance(text);
 
-        // Speaking speed based on BPM
-        const bpm = Number(bpmSlider.value);
+        const utterance =
+            new SpeechSynthesisUtterance(text);
 
-        let rate = bpm / 120;
 
-        if (rate < 0.5) rate = 0.5;
-        if (rate > 1.5) rate = 1.5;
+        // =========================
+        // BPM → SPEAKING SPEED
+        // =========================
+
+        const bpm =
+            Number(bpmSlider.value);
+
+        let rate =
+            bpm / 120;
+
+
+        if (rate < 0.5) {
+            rate = 0.5;
+        }
+
+        if (rate > 1.5) {
+            rate = 1.5;
+        }
+
 
         utterance.rate = rate;
 
-        // Natural pitch
         utterance.pitch = 1;
 
-        // Comfortable volume
         utterance.volume = 1;
 
-        // Try to select Urdu voice when available
-        const voices = speechSynthesis.getVoices();
 
-        const urduVoice = voices.find(function (voice) {
-            return voice.lang.toLowerCase().startsWith("ur");
-        });
+        // =========================
+        // FIND URDU / SINDHI VOICE
+        // =========================
 
-        const sindhiVoice = voices.find(function (voice) {
-            return voice.lang.toLowerCase().startsWith("sd");
-        });
+        const voices =
+            speechSynthesis.getVoices();
+
+
+        const urduVoice =
+            voices.find(function (voice) {
+
+                return voice.lang
+                    .toLowerCase()
+                    .startsWith("ur");
+
+            });
+
+
+        const sindhiVoice =
+            voices.find(function (voice) {
+
+                return voice.lang
+                    .toLowerCase()
+                    .startsWith("sd");
+
+            });
+
 
         if (urduVoice) {
-            utterance.voice = urduVoice;
+
+            utterance.voice =
+                urduVoice;
+
         } else if (sindhiVoice) {
-            utterance.voice = sindhiVoice;
+
+            utterance.voice =
+                sindhiVoice;
+
         }
 
-        utterance.onstart = function () {
 
-            isSpeaking = true;
+        // =========================
+        // VOCAL STARTED
+        // =========================
 
-            vocalButton.textContent = "⏹ Stop Vocal";
-            vocalButton.classList.add("stop");
+        utterance.onstart =
+            function () {
 
-            status.textContent = "🎤 Vocal is playing...";
-        };
+                isSpeaking = true;
 
-        utterance.onend = function () {
+                vocalButton.textContent =
+                    "⏹ Stop Vocal";
 
-            isSpeaking = false;
+                vocalButton.classList.add("stop");
 
-            vocalButton.textContent = "🎤 Start Vocal";
-            vocalButton.classList.remove("stop");
+                status.textContent =
+                    "🎤 Vocal is playing...";
 
-            status.textContent = "✅ Vocal finished";
-        };
+            };
 
-        utterance.onerror = function () {
 
-            isSpeaking = false;
+        // =========================
+        // VOCAL FINISHED
+        // =========================
 
-            vocalButton.textContent = "🎤 Start Vocal";
-            vocalButton.classList.remove("stop");
+        utterance.onend =
+            function () {
 
-            status.textContent = "⚠️ Unable to play vocal on this device.";
-        };
+                isSpeaking = false;
+
+                vocalButton.textContent =
+                    "🎤 Start Vocal";
+
+                vocalButton.classList.remove("stop");
+
+                status.textContent =
+                    "✅ Vocal finished";
+
+            };
+
+
+        // =========================
+        // ERROR
+        // =========================
+
+        utterance.onerror =
+            function () {
+
+                isSpeaking = false;
+
+                vocalButton.textContent =
+                    "🎤 Start Vocal";
+
+                vocalButton.classList.remove("stop");
+
+                status.textContent =
+                    "⚠️ Unable to play vocal on this device.";
+
+            };
+
+
+        // START SPEECH
 
         speechSynthesis.speak(utterance);
+
     });
 
-    // Load voices
-    speechSynthesis.onvoiceschanged = function () {
-        speechSynthesis.getVoices();
-    };
+
+    // =========================
+    // LOAD AVAILABLE VOICES
+    // =========================
+
+    speechSynthesis.onvoiceschanged =
+        function () {
+
+            speechSynthesis.getVoices();
+
+        };
 
 </script>
 
