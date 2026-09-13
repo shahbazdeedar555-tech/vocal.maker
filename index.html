@@ -4,11 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Background Music Maker</title>
 
 <style>
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -111,6 +109,7 @@ button:disabled {
     color: #0b5d3b;
     font-weight: bold;
     line-height: 1.5;
+    word-break: break-word;
 }
 
 .result-box {
@@ -139,7 +138,6 @@ footer {
     color: #666;
     font-size: 14px;
 }
-
 </style>
 </head>
 
@@ -221,20 +219,11 @@ Sindhi Urdu Vocal Maker © 2026
 
 </div>
 
-
 <script>
-
-/* =====================================
-   CLOUDFLARE WORKER
-===================================== */
 
 const WORKER_URL =
 "https://background-music-separator.shahbazdeedar555.workers.dev/";
 
-
-/* =====================================
-   ELEMENTS
-===================================== */
 
 const songFile =
 document.getElementById("songFile");
@@ -268,9 +257,7 @@ let songURL = null;
 let instrumentalURL = null;
 
 
-/* =====================================
-   SONG UPLOAD
-===================================== */
+/* UPLOAD */
 
 songFile.addEventListener("change", function () {
 
@@ -293,9 +280,7 @@ songFile.addEventListener("change", function () {
     }
 
     if (songURL) {
-
         URL.revokeObjectURL(songURL);
-
     }
 
     songURL =
@@ -316,47 +301,23 @@ songFile.addEventListener("change", function () {
     resultBox.style.display =
     "none";
 
-    instrumentalPlayer.removeAttribute("src");
-
     status.textContent =
     "✅ Song uploaded. Ready to separate.";
 
 });
 
 
-/* =====================================
-   PLAY
-===================================== */
-
-originalPlayer.addEventListener("play", function () {
-
-    stopButton.style.display =
-    "block";
-
-    status.textContent =
-    "🎵 Original song is playing...";
-
-});
-
-
-/* =====================================
-   STOP
-===================================== */
+/* STOP */
 
 stopButton.addEventListener("click", function () {
 
     originalPlayer.pause();
-
     instrumentalPlayer.pause();
 
-    originalPlayer.currentTime =
-    0;
+    originalPlayer.currentTime = 0;
+    instrumentalPlayer.currentTime = 0;
 
-    instrumentalPlayer.currentTime =
-    0;
-
-    stopButton.style.display =
-    "none";
+    stopButton.style.display = "none";
 
     status.textContent =
     "Playback stopped.";
@@ -364,14 +325,11 @@ stopButton.addEventListener("click", function () {
 });
 
 
-/* =====================================
-   SEPARATE BACKGROUND MUSIC
-===================================== */
+/* SEPARATE */
 
 separateButton.addEventListener("click", async function () {
 
-    const file =
-    songFile.files[0];
+    const file = songFile.files[0];
 
     if (!file) {
 
@@ -381,38 +339,28 @@ separateButton.addEventListener("click", async function () {
         return;
     }
 
-    separateButton.disabled =
-    true;
+    separateButton.disabled = true;
 
     separateButton.textContent =
     "⏳ Processing...";
 
     status.textContent =
-    "🎼 Sending audio...";
+    "🎼 Sending audio to Worker...";
 
     try {
 
-        /*
-           Read the audio as raw binary data.
-           The Worker expects binary audio,
-           NOT FormData.
-        */
-
         const audioData =
         await file.arrayBuffer();
-
 
         const response =
         await fetch(
             WORKER_URL,
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type":
                     "application/octet-stream"
                 },
-
                 body: audioData
             }
         );
@@ -429,7 +377,6 @@ separateButton.addEventListener("click", async function () {
                 ": " +
                 message
             );
-
         }
 
 
@@ -442,7 +389,6 @@ separateButton.addEventListener("click", async function () {
             URL.revokeObjectURL(
                 instrumentalURL
             );
-
         }
 
 
@@ -453,10 +399,8 @@ separateButton.addEventListener("click", async function () {
         instrumentalPlayer.src =
         instrumentalURL;
 
-
         resultBox.style.display =
         "block";
-
 
         status.textContent =
         "✅ Background music is ready!";
@@ -467,8 +411,7 @@ separateButton.addEventListener("click", async function () {
         console.error(error);
 
         status.textContent =
-        "❌ Separation failed: " +
-        error.message;
+        "❌ " + error.message;
 
     }
 
@@ -482,32 +425,26 @@ separateButton.addEventListener("click", async function () {
 });
 
 
-/* =====================================
-   DOWNLOAD
-===================================== */
+/* DOWNLOAD */
 
 downloadButton.addEventListener("click", function () {
 
     if (!instrumentalURL) {
 
         status.textContent =
-        "⚠️ No background music file is available yet.";
+        "⚠️ No background music file is available.";
 
         return;
     }
 
-
     const link =
     document.createElement("a");
-
 
     link.href =
     instrumentalURL;
 
-
     link.download =
     "background-music.wav";
-
 
     document.body.appendChild(link);
 
@@ -518,9 +455,7 @@ downloadButton.addEventListener("click", function () {
 });
 
 
-/* =====================================
-   CLEANUP
-===================================== */
+/* CLEANUP */
 
 window.addEventListener(
 "beforeunload",
@@ -531,7 +466,6 @@ function () {
         URL.revokeObjectURL(
             songURL
         );
-
     }
 
     if (instrumentalURL) {
@@ -539,7 +473,6 @@ function () {
         URL.revokeObjectURL(
             instrumentalURL
         );
-
     }
 
 });
