@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
 <title>Background Music Maker</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -91,10 +93,6 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: #08482f;
-}
-
 button:disabled {
     background: #999;
     cursor: not-allowed;
@@ -135,16 +133,13 @@ button:disabled {
     background: #1769aa;
 }
 
-.download-button:hover {
-    background: #0d4f80;
-}
-
 footer {
     text-align: center;
     margin-top: 25px;
     color: #666;
     font-size: 14px;
 }
+
 </style>
 </head>
 
@@ -226,6 +221,7 @@ Sindhi Urdu Vocal Maker © 2026
 
 </div>
 
+
 <script>
 
 /* =====================================
@@ -297,7 +293,9 @@ songFile.addEventListener("change", function () {
     }
 
     if (songURL) {
+
         URL.revokeObjectURL(songURL);
+
     }
 
     songURL =
@@ -321,13 +319,13 @@ songFile.addEventListener("change", function () {
     instrumentalPlayer.removeAttribute("src");
 
     status.textContent =
-    "✅ Song uploaded. Ready to separate background music.";
+    "✅ Song uploaded. Ready to separate.";
 
 });
 
 
 /* =====================================
-   ORIGINAL SONG PLAY
+   PLAY
 ===================================== */
 
 originalPlayer.addEventListener("play", function () {
@@ -337,22 +335,6 @@ originalPlayer.addEventListener("play", function () {
 
     status.textContent =
     "🎵 Original song is playing...";
-
-});
-
-
-/* =====================================
-   ORIGINAL SONG PAUSE
-===================================== */
-
-originalPlayer.addEventListener("pause", function () {
-
-    if (!originalPlayer.ended) {
-
-        status.textContent =
-        "Original song paused.";
-
-    }
 
 });
 
@@ -406,17 +388,18 @@ separateButton.addEventListener("click", async function () {
     "⏳ Processing...";
 
     status.textContent =
-    "🎼 Sending audio to separation engine...";
+    "🎼 Sending audio...";
 
     try {
 
-        const formData =
-        new FormData();
+        /*
+           Read the audio as raw binary data.
+           The Worker expects binary audio,
+           NOT FormData.
+        */
 
-        formData.append(
-            "file",
-            file
-        );
+        const audioData =
+        await file.arrayBuffer();
 
 
         const response =
@@ -424,16 +407,27 @@ separateButton.addEventListener("click", async function () {
             WORKER_URL,
             {
                 method: "POST",
-                body: formData
+
+                headers: {
+                    "Content-Type":
+                    "application/octet-stream"
+                },
+
+                body: audioData
             }
         );
 
 
         if (!response.ok) {
 
+            const message =
+            await response.text();
+
             throw new Error(
-                "Server returned " +
-                response.status
+                "Server " +
+                response.status +
+                ": " +
+                message
             );
 
         }
@@ -473,7 +467,8 @@ separateButton.addEventListener("click", async function () {
         console.error(error);
 
         status.textContent =
-        "❌ Separation failed. Please try again.";
+        "❌ Separation failed: " +
+        error.message;
 
     }
 
@@ -511,7 +506,7 @@ downloadButton.addEventListener("click", function () {
 
 
     link.download =
-    "background-music.mp3";
+    "background-music.wav";
 
 
     document.body.appendChild(link);
